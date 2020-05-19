@@ -36,6 +36,12 @@ target 'project' do
   
   pod 'Firebase/Auth', '~> 6.17.0'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
+  pod 'TouchID', :path => '../node_modules/react-native-touch-id'
+
   target 'projectTests' do
     inherit! :search_paths
     # Pods for testing

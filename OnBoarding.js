@@ -2,6 +2,7 @@
 import 'react-native-gesture-handler';
 
 import firebase from 'react-native-firebase';
+import TouchID from 'react-native-touch-id';
 
 import React, {Component} from 'react';
 import {
@@ -28,43 +29,23 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import { StackActions, NavigationActions } from 'react-navigation';
+
+import Storage from 'react-native-storage';
+import AsyncStorage from '@react-native-community/async-storage';
+
+const storage = new Storage({
+  size: 1000,
+  storageBackend: AsyncStorage,
+  defaultExpires: null,
+  enableCache: true,
+  sync: {
+  }
+});
 
 const styles = {
   scrollView: {
     backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
   textfield: {
     height: 60, // have to do it on iOS
@@ -104,20 +85,57 @@ export default class OnBoarding extends Component{
       response: ''
     }
   }
+
+  componentDidMount(){
+    this.loadAutoLogin();
+  }
+
   async signUp(){
     try{
       await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       this.setState({
         response: 'account created!'
       })
-      setTimeout(() => {
-        this.props.navigation.push('Home');
-      }, 300)
+      this.saveAutoLogin();
+      this.props.navigation.dispatch(
+        StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Home' })]
+        })
+      )
     }catch(error){
       this.setState({
         response: error.toString()
       })
+      alert(this.state.response);
     }
+  }
+
+  _clickHandler() {
+    TouchID.isSupported()
+      .then(()=> {
+        TouchID.authenticate()
+        .then(success => {
+          this.saveAutoLogin();
+          this.props.navigation.dispatch(
+            StackActions.reset({
+            index: 0,
+            actions: [NavigationActions.navigate({ routeName: 'Home' })]
+            })
+          )
+        })
+        .catch(error => {
+          console.log(error)
+          this.setState({
+            response: error.message
+          })
+          alert(this.state.response);
+        });
+      })
+      .catch(error => {
+        console.log(error)
+        alert('TouchID not supported');
+      });
   }
 
   async  login(){
@@ -126,13 +144,18 @@ export default class OnBoarding extends Component{
       this.setState({
         response: 'user logged in'
       })
-      setTimeout(() => {
-        this.props.navigation.push('Home');
-      }, 300)
+      this.saveAutoLogin();
+      this.props.navigation.dispatch(
+        StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Home' })]
+        })
+      )
     }catch(error){
       this.setState({
         response: error.toString()
       })
+      alert(this.state.response);
     }
   }
 
@@ -144,68 +167,80 @@ export default class OnBoarding extends Component{
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
-           
-            <View style={styles.body}>
-              <View style={styles.row}>
-                <View style={styles.col}>
-                  <Textfield
-                    floatingLabelEnabled={false}
-                    placeholder="Email"
-                    style={styles.textfield}
-                    textInputStyle={{
-                      flex: 1,
-                    }}
-                    onChangeText ={(email) => this.setState({email})}
-                  />
-                  <Textfield
-                    floatingLabelEnabled={false}
-                    password={true}
-                    placeholder="Contraseña"
-                    style={styles.passwordTextfield}
-                    textInputStyle={{
-                      flex: 1,
-                    }}
-                    onChangeText ={(password) => this.setState({password})}
-                  />
-                  <Button
-                  backgroundColor={MKColor.Teal}
-                  shadowRadius={2}
-                  shadowOffset={{width:0, height:2}}
-                  shadowOpacity={.7}
-                  shadowColor="black"
-                  style={styles.button}
-                  onPress={async () => {
-                    this.signUp();
+            <View style={styles.row}>
+              <View style={styles.col}>
+                <Textfield
+                  floatingLabelEnabled={true}
+                  placeholder="Email"
+                  style={styles.textfield}
+                  textInputStyle={{
+                    flex: 1,
                   }}
-                  >
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                      <Text pointerEvents="none"
-                            style={{color: 'white', fontWeight: 'bold', textAlign: "center", fontSize: 20}}>
-                        Registrarse
-                      </Text>
-                    </View>
-                  </Button>
-                  
-                  <Button
-                  backgroundColor={MKColor.Teal}
-                  shadowRadius={2}
-                  shadowOffset={{width:0, height:2}}
-                  shadowOpacity={.7}
-                  shadowColor="black"
-                  style={styles.button}
-                  onPress={async () => {
-                    this.login();
+                  onChangeText ={(email) => this.setState({email})}
+                />
+                <Textfield
+                  floatingLabelEnabled={true}
+                  password={true}
+                  placeholder="Contraseña"
+                  style={styles.passwordTextfield}
+                  textInputStyle={{
+                    flex: 1,
                   }}
-                  >
+                  onChangeText ={(password) => this.setState({password})}
+                />
+                <Button
+                backgroundColor={MKColor.Teal}
+                shadowRadius={2}
+                shadowOffset={{width:0, height:2}}
+                shadowOpacity={.7}
+                shadowColor="black"
+                style={styles.button}
+                onPress={async () => {
+                  this.signUp();
+                }}
+                >
                   <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                     <Text pointerEvents="none"
                           style={{color: 'white', fontWeight: 'bold', textAlign: "center", fontSize: 20}}>
-                      Iniciar sesión
+                      Registrarse
                     </Text>
                   </View>
                 </Button>
+                
+                <Button
+                backgroundColor={MKColor.Teal}
+                shadowRadius={2}
+                shadowOffset={{width:0, height:2}}
+                shadowOpacity={.7}
+                shadowColor="black"
+                style={styles.button}
+                onPress={async () => {
+                  this.login();
+                }}
+                >
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text pointerEvents="none"
+                        style={{color: 'white', fontWeight: 'bold', textAlign: "center", fontSize: 20}}>
+                    Iniciar sesión
+                  </Text>
                 </View>
-                <Text>{this.state.response}</Text>
+              </Button>
+              <Button
+                backgroundColor={MKColor.Teal}
+                shadowRadius={2}
+                shadowOffset={{width:0, height:2}}
+                shadowOpacity={.7}
+                shadowColor="black"
+                style={styles.button}
+                onPress={this._clickHandler}
+                >
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Text pointerEvents="none"
+                        style={{color: 'white', fontWeight: 'bold', textAlign: "center", fontSize: 20}}>
+                    TouchID Login
+                  </Text>
+                </View>
+              </Button>
               </View>
             </View>
           </ScrollView>
@@ -213,5 +248,73 @@ export default class OnBoarding extends Component{
       </>
     );
   };
+
+  
+
+  saveAutoLogin(){
+    storage.save({
+      key: 'loginState', // Note: Do not use underscore("_") in key!
+      data: {
+        loginState: true 
+      },
+    
+      // if expires not specified, the defaultExpires will be applied instead.
+      // if set to null, then it will never expire.
+      expires: null
+    });
+  }
+
+  loadAutoLogin(){
+    // load
+  storage
+  .load({
+    key: 'loginState',
+
+    // autoSync (default: true) means if data is not found or has expired,
+    // then invoke the corresponding sync method
+    autoSync: true,
+
+    // syncInBackground (default: true) means if data expired,
+    // return the outdated data first while invoking the sync method.
+    // If syncInBackground is set to false, and there is expired data,
+    // it will wait for the new data and return only after the sync completed.
+    // (This, of course, is slower)
+    syncInBackground: true,
+
+    // you can pass extra params to the sync method
+    // see sync example below
+    syncParams: {
+      extraFetchOptions: {
+        // blahblah
+      },
+      someFlag: true
+    }})
+    .then(ret => {
+      // found data go to then()
+      console.log(ret.loginState);
+      if(ret.loginState){
+        this.props.navigation.dispatch(
+          StackActions.reset({
+          index: 0,
+          actions: [NavigationActions.navigate({ routeName: 'Home' })]
+          })
+        )
+      }
+    })
+    .catch(err => {
+      // any exception including data not found
+      // goes to catch()
+      console.warn(err.message);
+      switch (err.name) {
+        case 'NotFoundError':
+          // TODO;
+          break;
+        case 'ExpiredError':
+          // TODO
+          break;
+      }
+    });
+  }
 }
+
   
