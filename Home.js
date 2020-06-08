@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MapView, { Marker, Polyline } from "react-native-maps";
+import MapView, {} from "react-native-maps";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import  ClusteredMarker from "./map-clustering/Marker";
 

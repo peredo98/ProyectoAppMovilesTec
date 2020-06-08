@@ -11,12 +11,22 @@ class App extends Component {
 
 const AppNavigator = createStackNavigator(
   {
-    OnBoarding:OnBoarding,    
-    Home:Home,
+    OnBoarding:{
+      screen: OnBoarding,
+      navigationOptions: {
+        header: null,
+      },
+    }, 
+    Home: {
+      screen: Home,
+      navigationOptions: {
+        header: null,
+      },
+    },
     Info:Info
   },
   {
-    initialRouteParams: OnBoarding
+    initialRouteParams: Home
   }
 );
 

@@ -4,7 +4,7 @@ import { Container, Header, Content, Card, CardItem, Text, Body } from "native-b
 export default class Info extends Component {
     constructor(props) {
         super(props);
-        console.log(this.props.navigation.state.params);
+        console.log(this.props.navigation);
     }
 
     static navigationOptions = ({navigation}) => {
