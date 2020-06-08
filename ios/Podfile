@@ -42,6 +42,8 @@ target 'project' do
 
   pod 'TouchID', :path => '../node_modules/react-native-touch-id'
 
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
+
   target 'projectTests' do
     inherit! :search_paths
     # Pods for testing

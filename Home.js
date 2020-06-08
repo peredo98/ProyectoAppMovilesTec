@@ -6,8 +6,8 @@ import  ClusteredMarker from "./map-clustering/Marker";
 const INITIAL_REGION = {
   latitude: 40,
   longitude: 0,
-  latitudeDelta: 180,
-  longitudeDelta: 360
+  latitudeDelta: 90,
+  longitudeDelta: 180
 };
 
 export default class Home extends Component {

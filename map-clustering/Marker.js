@@ -14,8 +14,8 @@ const ClusteredMarker = ({
   return (
     <Marker
       coordinate={{
-        longitude: location.coordinates.longitude,
-        latitude: location.coordinates.latitude
+        longitude: parseFloat(location.coordinates.longitude),
+        latitude: parseFloat(location.coordinates.latitude)
       }}
       style={{ zIndex: points + 1 }}
       onPress={onPress}

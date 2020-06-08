@@ -2,7 +2,6 @@
 import 'react-native-gesture-handler';
 
 import firebase from 'react-native-firebase';
-import TouchID from 'react-native-touch-id';
 
 import React, {Component} from 'react';
 import {
@@ -111,32 +110,6 @@ export default class OnBoarding extends Component{
     }
   }
 
-  _clickHandler() {
-    TouchID.isSupported()
-      .then(()=> {
-        TouchID.authenticate()
-        .then(success => {
-          this.saveAutoLogin();
-          this.props.navigation.dispatch(
-            StackActions.reset({
-            index: 0,
-            actions: [NavigationActions.navigate({ routeName: 'Home' })]
-            })
-          )
-        })
-        .catch(error => {
-          console.log(error)
-          this.setState({
-            response: error.message
-          })
-          alert(this.state.response);
-        });
-      })
-      .catch(error => {
-        console.log(error)
-        alert('TouchID not supported');
-      });
-  }
 
   async  login(){
     try{
@@ -222,22 +195,6 @@ export default class OnBoarding extends Component{
                   <Text pointerEvents="none"
                         style={{color: 'white', fontWeight: 'bold', textAlign: "center", fontSize: 20}}>
                     Iniciar sesión
-                  </Text>
-                </View>
-              </Button>
-              <Button
-                backgroundColor={MKColor.Teal}
-                shadowRadius={2}
-                shadowOffset={{width:0, height:2}}
-                shadowOpacity={.7}
-                shadowColor="black"
-                style={styles.button}
-                onPress={this._clickHandler}
-                >
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                  <Text pointerEvents="none"
-                        style={{color: 'white', fontWeight: 'bold', textAlign: "center", fontSize: 20}}>
-                    TouchID Login
                   </Text>
                 </View>
               </Button>
