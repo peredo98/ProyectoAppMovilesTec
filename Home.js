@@ -1,7 +1,18 @@
 import React, {Component} from 'react';
-import MapView, {} from "react-native-maps";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import MapView, { Callout } from "react-native-maps";
+import { View, StyleSheet, TouchableOpacity, Text} from "react-native";
 import  ClusteredMarker from "./map-clustering/Marker";
+
+import {
+  getTheme,
+  Textfield,
+  MKColor,
+  Button,
+} from 'react-native-material-kit';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 
 const INITIAL_REGION = {
   latitude: 40,
@@ -44,6 +55,8 @@ export default class Home extends Component {
     
     const points = 20;
     return (
+      <View style={styles.container}>
+
       <MapView initialRegion={INITIAL_REGION} minZoom={-1} style={{ flex: 1 }}>
         {
           this.state.data.map((location) => {
@@ -54,28 +67,62 @@ export default class Home extends Component {
         }
         
       </MapView>
+
+      <Callout style={styles.buttonCallout}>
+          <TouchableOpacity
+            style={[styles.touchable]}
+            onPress={() => this.props.navigation.push('Noticias')}
+          >
+            <Icon
+              name="newspaper-o"
+              size={60} color="#fff"
+            />
+          </TouchableOpacity>
+        </Callout>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
+    flex: 1
   },
-  wrapper: {
-    position: "absolute",
-    opacity: 0.5,
-    zIndex: 0
+  buttonCallout: {
+    position: 'absolute',
+    bottom:0,
+    flex: 1,
+    alignSelf: "flex-end",
+    justifyContent: "flex-end",
+    backgroundColor: "transparent",
+    borderWidth: 0.5,
+    borderRadius: 20,
+    marginBottom: 36
   },
-  cluster: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1
+  touchable: {
+    backgroundColor: "#008080",
+    borderRadius: 20,
+    height: 80,
+    padding: 10,
+    margin: 10
   },
-  text: {
-    fontWeight: "bold"
+  touchableText: {
+    fontSize: 24
+  },
+  searchCallout: {
+    flexDirection: "row",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 10,
+    width: "80%",
+    marginLeft: "5%",
+    marginTop: 40
+  },
+  calloutSearch: {
+    borderColor: "transparent",
+    marginLeft: 10,
+    width: "90%",
+    marginRight: 10,
+    height: 40,
+    borderWidth: 0.0
   }
 });
