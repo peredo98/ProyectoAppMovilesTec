@@ -40,9 +40,7 @@ target 'project' do
 
   pod 'react-native-webview', :path => '../node_modules/react-native-webview'
 
-  pod 'TouchID', :path => '../node_modules/react-native-touch-id'
-
-  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
